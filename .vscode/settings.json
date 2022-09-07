@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "*.cs": "csharp",
+        "functional": "cpp",
+        "*.tcc": "cpp",
+        "ostream": "cpp",
+        "array": "cpp",
+        "istream": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
+    }
+}
