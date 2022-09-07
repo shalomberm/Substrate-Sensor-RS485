@@ -37,13 +37,12 @@ void CustomModbus::send(byte* buffer, size_t size)
     setCRC(buffer, size);
     SoftwareSerial::write(buffer, size);
     setReceive();
-    // Serial.println("set: ");
-    // printQuery(query, 8);
 }
 
 bool CustomModbus::get(byte* buffer, size_t size)
 {
-    SoftwareSerial::readBytes(buffer, size);
+    Serial.println(SoftwareSerial::readBytes(buffer, size));
+    // Serial.printf("0x%02X\n", buffer[size-1]);
     int crc = get_crc(buffer, size-2);
     return (buffer[size-2] == (crc & 0xFF) 
            && buffer[size-1] == ((crc >> 8) & 0xFF));
