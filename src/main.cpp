@@ -4,19 +4,19 @@
 #include <Arduino.h>
 #include "SubstrateSensor.h"
 
-CustomModbus myModbus(25, 22, 22, 26);
+#define TXpin 17
+#define RXpin 16
+#define SWITCH 12
+
+CustomModbus myModbus(TXpin, SWITCH, SWITCH, RXpin);
 SubstrateSensor subSensor(&myModbus);
 
-void setup() {
-  Serial.begin(9600); // Main serial port for debugging via USB Serial Monitor
-  myModbus.begin(4800); // Modbus serial port for substrate sensor communication
-  subSensor.begin(0x01);
-}
-
-void loop()
+void printSubSensor()
 {
   subSensor.update();
   Serial.println("--------------------");
+  Serial.printf("Address: 0x%02X\n", subSensor.addr);
+  Serial.printf("Baud rate: %i\n", subSensor.modbus->baudRate());
   Serial.print("Temparature: ");
   Serial.println(subSensor.temp());
   Serial.print("Moisture: ");
@@ -35,5 +35,22 @@ void loop()
   Serial.println(subSensor.phosphorus());
   Serial.print("Potassium: ");
   Serial.println(subSensor.potassium());
+}
+
+void setup() {
+  Serial.begin(9600); // Main serial port for debugging via USB Serial Monitor
+  myModbus.begin(4800); // Modbus serial port for substrate sensor communication
+  subSensor.begin(0xC);
+}
+
+int i = 0;
+void loop()
+{
+  printSubSensor();
   delay(2000);
+
+  // if (i++ > 5)
+  //   subSensor.setAddress(0x69);
+  // if (i > 10)
+  //   subSensor.setBaudRate(NPK_BAUD_RATE_9600);
 }

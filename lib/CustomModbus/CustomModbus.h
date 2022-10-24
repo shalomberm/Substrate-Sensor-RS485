@@ -8,7 +8,7 @@
 struct CustomModbus : public SoftwareSerial
 {
     uint8_t DI, DE, RE, RO;
-    CustomModbus(uint8_t DIpin, uint8_t DEpin, uint8_t REpin, uint8_t ROpin) : DI(DIpin), DE(DEpin), RE(REpin), RO(ROpin) {}
+    CustomModbus(uint8_t TXpin, uint8_t DEpin, uint8_t REpin, uint8_t RXpin) : DI(TXpin), DE(DEpin), RE(REpin), RO(RXpin) {}
     void begin(uint32_t baud, SoftwareSerialConfig config);
     void send(byte* buffer, size_t size);
     bool get(byte* buffer, size_t size);
