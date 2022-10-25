@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include <ModbusMaster.h>
 
 struct CustomModbus : public SoftwareSerial
 {

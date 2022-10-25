@@ -36,8 +36,7 @@ public:
     CustomModbus *modbus;
     uint16_t data[9] = {0};
 
-    SubstrateSensor(CustomModbus *customModbus) : modbus(customModbus) {}
-    void begin(uint8_t address=0x01) {addr = address;}
+    SubstrateSensor(CustomModbus *customModbus, uint8_t address) : modbus(customModbus), addr(address) {}
     void update();
     uint16_t read(npk_register_t);
 

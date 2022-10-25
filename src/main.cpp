@@ -9,7 +9,7 @@
 #define SWITCH 12
 
 CustomModbus myModbus(TXpin, SWITCH, SWITCH, RXpin);
-SubstrateSensor subSensor(&myModbus);
+SubstrateSensor subSensor(&myModbus, 0xC);
 
 void printSubSensor()
 {
@@ -40,7 +40,6 @@ void printSubSensor()
 void setup() {
   Serial.begin(9600); // Main serial port for debugging via USB Serial Monitor
   myModbus.begin(4800); // Modbus serial port for substrate sensor communication
-  subSensor.begin(0xC);
 }
 
 int i = 0;
