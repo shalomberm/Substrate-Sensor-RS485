@@ -51,6 +51,7 @@ public:
     float potassium() {return data[READ_POTASSIUM];}
     bool setAddress(uint8_t address); // these dont work yet
     bool setBaudRate(npk_baud_rate_t baud_rate); // these dont work yet
+    void writeTo(Stream &stream);
 };
 
 void SubstrateSensor::update()
@@ -100,6 +101,30 @@ bool SubstrateSensor::setBaudRate(npk_baud_rate_t baud_rate)
   int getBaud[] = {2400, 4800, 9600};
   modbus->begin(getBaud[baud_rate]);
   return true;
+}
+
+void SubstrateSensor::writeTo(Stream &stream)
+{
+  stream.printf("Address: 0x%02X\n", this->addr);
+  stream.printf("Baud rate: %i\n", this->modbus->baudRate());
+  stream.print("Temparature: ");
+  stream.println(this->temp());
+  stream.print("Moisture: ");
+  stream.println(this->moisture());
+  stream.print("PH: ");
+  stream.println(this->ph());
+  stream.print("TDS: ");
+  stream.println(this->tds());
+  stream.print("Conductivity: ");
+  stream.println(this->conductivity());
+  stream.print("Salinity: ");
+  stream.println(this->salinity());
+  stream.print("Nitrogen: ");
+  stream.println(this->nitrogen());
+  stream.print("Phosphorus: "); 
+  stream.println(this->phosphorus());
+  stream.print("Potassium: ");
+  stream.println(this->potassium());
 }
 
 #endif

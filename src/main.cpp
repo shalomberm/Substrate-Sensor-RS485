@@ -6,36 +6,10 @@
 
 #define TXpin 17
 #define RXpin 16
-#define SWITCH 12
+#define SWITCH 32
 
 CustomModbus myModbus(TXpin, SWITCH, SWITCH, RXpin);
 SubstrateSensor subSensor(&myModbus, 0xC);
-
-void printSubSensor()
-{
-  subSensor.update();
-  Serial.println("--------------------");
-  Serial.printf("Address: 0x%02X\n", subSensor.addr);
-  Serial.printf("Baud rate: %i\n", subSensor.modbus->baudRate());
-  Serial.print("Temparature: ");
-  Serial.println(subSensor.temp());
-  Serial.print("Moisture: ");
-  Serial.println(subSensor.moisture());
-  Serial.print("PH: ");
-  Serial.println(subSensor.ph());
-  Serial.print("TDS: ");
-  Serial.println(subSensor.tds());
-  Serial.print("Conductivity: ");
-  Serial.println(subSensor.conductivity());
-  Serial.print("Salinity: ");
-  Serial.println(subSensor.salinity());
-  Serial.print("Nitrogen: ");
-  Serial.println(subSensor.nitrogen());
-  Serial.print("Phosphorus: "); 
-  Serial.println(subSensor.phosphorus());
-  Serial.print("Potassium: ");
-  Serial.println(subSensor.potassium());
-}
 
 void setup() {
   Serial.begin(9600); // Main serial port for debugging via USB Serial Monitor
@@ -45,7 +19,8 @@ void setup() {
 int i = 0;
 void loop()
 {
-  printSubSensor();
+  subSensor.update();
+  subSensor.writeTo(Serial);
   delay(2000);
 
   // if (i++ > 5)
