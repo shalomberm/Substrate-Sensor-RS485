@@ -9,24 +9,24 @@
 
 enum npk_register_t : uint16_t
 {
-    READ_MOISTURE = 0,
-    READ_TEMPERATURE,
-    READ_CONDUCTIVITY,
-    READ_PH,
-    READ_NITROGEN,
-    READ_PHOSPHORUS,
-    READ_POTASSIUM,
-    READ_SALINITY,
-    READ_TDS,
-    WRITE_ADDR = 0x7D0,
-    WRITE_BAUD = 0x7D1
+    READ_MOISTURE =     0x00,
+    READ_TEMPERATURE =  0x01,
+    READ_CONDUCTIVITY = 0x02,
+    READ_PH =           0x03,
+    READ_NITROGEN =     0x04,
+    READ_PHOSPHORUS =   0x05,
+    READ_POTASSIUM =    0x06,
+    READ_SALINITY =     0x07,
+    READ_TDS =          0x08,
+    WRITE_ADDR =        0x7D0,
+    WRITE_BAUD =        0x7D1
 };
 
 enum npk_baud_rate_t : uint8_t
 {
-  NPK_BAUD_RATE_2400 = 0,
-  NPK_BAUD_RATE_4800,
-  NPK_BAUD_RATE_9600
+  NPK_BAUD_RATE_2400 = 0x00,
+  NPK_BAUD_RATE_4800 = 0x01,
+  NPK_BAUD_RATE_9600 = 0x02
 };
 
 class SubstrateSensor
@@ -35,20 +35,22 @@ public:
     uint8_t addr;
     CustomModbus *modbus;
     uint16_t data[9] = {0};
+    bool valid = false;
 
     SubstrateSensor(CustomModbus *customModbus, uint8_t address) : modbus(customModbus), addr(address) {}
     void update();
     uint16_t read(npk_register_t);
 
-    float ph() {return data[READ_PH]/10.f;}
-    float tds() {return data[READ_TDS];}
-    float temp() {return data[READ_TEMPERATURE]/10.f;}
-    float moisture() {return data[READ_MOISTURE]/10.f;}
-    float conductivity() {return data[READ_CONDUCTIVITY];}
-    float salinity() {return data[READ_SALINITY];}
-    float nitrogen() {return data[READ_NITROGEN];}
-    float phosphorus() {return data[READ_PHOSPHORUS];}
-    float potassium() {return data[READ_POTASSIUM];}
+    float ph() {return isValid() ? data[READ_PH]/10.f : NAN;}
+    float tds() {return isValid() ? data[READ_TDS] : NAN;}
+    float temp() {return isValid() ? data[READ_TEMPERATURE]/10.f : NAN;}
+    float moisture() {return isValid() ? data[READ_MOISTURE]/10.f : NAN;}
+    float conductivity() {return isValid() ? data[READ_CONDUCTIVITY] : NAN;}
+    float salinity() {return isValid() ? data[READ_SALINITY] : NAN;}
+    float nitrogen() {return isValid() ? data[READ_NITROGEN] : NAN;}
+    float phosphorus() {return isValid() ? data[READ_PHOSPHORUS] : NAN;}
+    float potassium() {return isValid() ? data[READ_POTASSIUM] : NAN;}
+    bool isValid() {return valid;}
     bool setAddress(uint8_t address); // these dont work yet
     bool setBaudRate(npk_baud_rate_t baud_rate); // these dont work yet
     void writeTo(Stream &stream);
@@ -56,16 +58,20 @@ public:
 
 void SubstrateSensor::update()
 {
+  memset(data, 0, 9); // clear list
+  valid = false; // default is false
   // addr (1), func (1), start addr (2), length (2), crc (2),
   // addr (1), func (1), valid bytes (1), nth data (2*n), crc (2),
   byte query[8] = {addr, 0x03, 0x00, 0x00, 0x00, 0x09};
   byte res[23] = {0};
   modbus->send(query, 8);
-  modbus->get(res, 23);
-
-  // check CRC before moving on
+  if (modbus->get(res, 23) == 0)
+    return;
   for (int i = 0; i < 9; i++)
     data[i] = res[i*2+4] | res[i*2+3] << 8;
+  valid = true;
+  // Serial.printf("update %i\n", this->addr);
+  // Serial.printf("done %i\n", this->addr);
 }
 
 uint16_t SubstrateSensor::read(npk_register_t read_register)

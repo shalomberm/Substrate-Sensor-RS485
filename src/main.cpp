@@ -6,10 +6,10 @@
 
 #define TXpin 17
 #define RXpin 16
-#define SWITCH 32
+#define SWITCH 12
 
 CustomModbus myModbus(TXpin, SWITCH, SWITCH, RXpin);
-SubstrateSensor subSensor(&myModbus, 0xC);
+SubstrateSensor subSensor(&myModbus, 0x1);
 
 void setup() {
   Serial.begin(9600); // Main serial port for debugging via USB Serial Monitor
